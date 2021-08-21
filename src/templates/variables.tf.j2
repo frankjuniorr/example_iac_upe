@@ -1,0 +1,39 @@
+variable "tag_provisioning" {
+  type = string
+  default = "{{ terraform_tag_provisioning }}"
+}
+
+variable "backend_bucket" {
+  type = string
+  default = "{{ terraform_backend_bucket }}"
+}
+
+variable "region_id" {
+  type = string
+  default = "{{ region_id }}"
+}
+
+variable "tag_ec2_name" {
+  type = string
+  default = "{{ terraform_ec2_tag_name }}"
+}
+
+variable "ssh_public_key" {
+  type = string
+  default = "{{ ssh_public_key }}"
+}
+
+variable "aws_key_pair" {
+  type = string
+  default = "{{ terraform_aws_key_pair }}"
+}
+
+variable "upe_security_group" {
+  type = string
+  default = "{{ terraform_security_group }}"
+}
+
+variable "upe_role_name" {
+  type = string
+  default = "{{ terraform_upe_role_name }}"
+}

@@ -1,0 +1,24 @@
+- name: "Generate terraform files"
+  template:
+    src: "{{ template_terraform_variables }}"
+    dest: "roles/deploy-infra/files/infra/{{ terraform_variables_file }}"
+
+- name: "Destroy infra"
+  shell: |
+    cd roles/deploy-infra/files/infra
+    terraform init
+    terraform destroy -auto-approve
+
+- name: "Remove Terraform backend bucket"
+  s3_bucket:
+    name: "{{ terraform_backend_bucket }}"
+    state: absent
+    force: yes
+
+- name: "Clean files build by templates"
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - "{{ ssh_key_file }}"
+    - "roles/deploy-infra/files/infra/{{ terraform_variables_file }}"

@@ -1,0 +1,3 @@
+*.pem
+.env
+roles/deploy-infra/files/infra/variables.tf

@@ -1,0 +1,45 @@
+######################################################
+# Deploy all AWS infra
+######################################################
+- name: "Playbook to create EC2 with IaC code example"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  collections:
+    - amazon.aws
+    - community.aws
+    - ansible.builtin
+    - community.general
+
+  roles:
+
+    - role: deploy-infra
+      tags:
+        - create-infra
+
+######################################################
+# Configure EC2 on the AWS
+######################################################
+- name: "Playbook to configure EC2 UPE example"
+  hosts: "upe_example_host"
+  gather_facts: false
+
+  roles:
+    - role: configure-ec2
+      tags:
+        - create-infra
+
+# #####################################################
+# Destroy infra
+# #####################################################
+- name: "Destroy infra"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  roles:
+
+    - role: destroy-infra
+      tags:
+        - destroy-infra

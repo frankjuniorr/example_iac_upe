@@ -1,0 +1,25 @@
+---
+region_id: "us-east-1"
+
+# bucket used to Terraform store backend (.tfstate file)
+terraform_backend_bucket: "terraform-upe-backend-bucket"
+
+#  ssh key file. The same key used by ssh_key_pairs in AWS by terraform
+ssh_key_file: "ec2_ssh_key.pem"
+
+# ec2 host group. Used by playbook-main to connect to EC2 (by host config) and configure it
+host_group: "upe_example_host"
+
+# Templates Terraform
+terraform_variables_file: "variables.tf"
+template_terraform_variables: "{{ terraform_variables_file }}.j2"
+
+
+# Terraform resources
+terraform_aws_key_pair: "upe_ec2_key_pair"
+terraform_security_group: "upe_security_group"
+terraform_tag_provisioning: "upe_example"
+terraform_upe_role_name: "upe_iam_role"
+terraform_ec2_tag_name: "upe_ec2"
+
+ssh_public_key: "{{ lookup('env', 'UPE_SSH_PUBLIC_KEY') }}"

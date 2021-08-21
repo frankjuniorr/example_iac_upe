@@ -1,0 +1,48 @@
+---
+######################################################
+# Install packages
+######################################################
+- name: "Update apt"
+  become: yes
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: "Upgrade all apt packages"
+  become: yes
+  apt:
+    upgrade: dist
+    force_apt_get: yes
+
+- name: "Install Apt packages"
+  become: yes
+  apt:
+    name: "nginx"
+    state: present
+    force_apt_get: yes
+
+- name: "Backup original nginx welcome page"
+  become: yes
+  copy:
+    remote_src: True
+    src: "/var/www/html/index.nginx-debian.html"
+    dest: "/var/www/html/index.nginx-debian.html.old"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Remove original nginx welcome page"
+  become: yes
+  file:
+    path: "/var/www/html/index.nginx-debian.html"
+    state: absent
+
+- name: "Customize nginx welcome page"
+  become: yes
+  copy:
+    src: "hello_world.html"
+    dest: "/var/www/html/index.nginx-debian.html"
+    owner: root
+    group: root
+    mode: '0644'

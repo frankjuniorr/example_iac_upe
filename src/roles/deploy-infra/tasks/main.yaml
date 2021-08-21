@@ -1,0 +1,61 @@
+
+######################################################
+# Create Terraform backend bucket
+######################################################
+- name: "Create Terraform backend bucket"
+  s3_bucket:
+    name: "{{ terraform_backend_bucket }}"
+    region: "{{ region_id }}"
+
+######################################################
+# Generate terraform variables file
+######################################################
+- name: "Generate terraform files"
+  template:
+    src: "{{ template_terraform_variables }}"
+    dest: "roles/deploy-infra/files/infra/{{ terraform_variables_file }}"
+
+######################################################
+# Deploy terraform
+######################################################
+- name: "Create infra by Terraform"
+  terraform:
+    project_path: 'roles/deploy-infra/files/infra'
+    state: "present"
+    force_init: true
+    backend_config:
+      region: "{{ region_id }}"
+      bucket: "{{ terraform_backend_bucket }}"
+      key: "upe_example.tfstate"
+
+
+######################################################
+# Get EC2 IP Address
+######################################################
+- name: "Get EC2 info from AWS"
+  ec2_instance_info:
+    region: "{{ region_id }}"
+    filters:
+      "tag:Name": "{{ terraform_ec2_tag_name }}"
+  register: ec2_info
+
+- name: "Set EC2_PUBLIC_IP"
+  set_fact:
+    ec2_public_ip: "{{ item.network_interfaces[0].association.public_ip }}"
+  loop: "{{ ec2_info.instances }}"
+  when: item.state.name == 'running'
+
+- name: "show EC2_PUBLIC_IP"
+  debug:
+    msg: "{{ ec2_public_ip }}"
+
+######################################################
+# Add host to inventory
+######################################################
+- name: "Add host to inventory"
+  add_host:
+    hostname: "{{ ec2_public_ip }}"
+    groups: "{{ host_group }}"
+    ansible_user: "ubuntu"
+    ansible_ssh_private_key_file: "{{ ssh_key_file }}"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
